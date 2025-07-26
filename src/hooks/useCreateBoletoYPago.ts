@@ -72,7 +72,7 @@ export async function createBoletoYPago({
     if (pagoError) return { success: false, error: pagoError.message };
 
     return { success: true };
-  } catch {
+  } catch (err) {
     return { success: false, error: 'Ocurrió un error inesperado.' };
   }
 }

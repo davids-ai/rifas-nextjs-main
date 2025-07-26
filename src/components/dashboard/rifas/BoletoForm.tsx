@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { createBoletoYPago } from '@/hooks/useCreateBoletoYPago';
 import { useBoletosOcupados } from '@/hooks/useBoletosOcupados';
 import { toast } from '@/components/ui/use-toast';
-import Image from 'next/image';
 
 const paymentMethods = [
   {
@@ -29,7 +28,7 @@ interface BoletoFormProps {
 }
 
 export function BoletoForm({ rifaId, cantidadBoletos, valorBoleto, userId }: BoletoFormProps) {
-  const { ocupados } = useBoletosOcupados(rifaId);
+  const { ocupados, loading: loadingOcupados } = useBoletosOcupados(rifaId);
   const [cantidad, setCantidad] = useState(1);
   const [selectedBoletos, setSelectedBoletos] = useState<number[]>([]);
   const [nombre, setNombre] = useState('');
@@ -60,7 +59,8 @@ export function BoletoForm({ rifaId, cantidadBoletos, valorBoleto, userId }: Bol
 
   const selectedMethod = paymentMethods.find((m) => m.name === metodoPago);
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     setMensaje('');
     if (selectedBoletos.length !== cantidad || !nombre || !telefono || !imagenPago) {
       setMensaje('Por favor completa todos los campos y selecciona los boletos.');
@@ -192,7 +192,7 @@ export function BoletoForm({ rifaId, cantidadBoletos, valorBoleto, userId }: Bol
               className={`flex items-center gap-2 border border-[#D1E9FF] px-4 py-2 rounded-lg transition-colors duration-150 ${metodoPago === method.name ? 'bg-blue-600 text-white' : 'bg-gray-100'}`}
               onClick={() => setMetodoPago(method.name)}
             >
-              <Image src={method.logo} alt={method.name} width={28} height={28} className="w-7 h-7 object-contain" />
+              <img src={method.logo} alt={method.name} className="w-7 h-7 object-contain" />
               <span>{method.name}</span>
             </button>
           ))}

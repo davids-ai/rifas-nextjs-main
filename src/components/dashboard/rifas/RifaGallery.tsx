@@ -18,7 +18,13 @@ export function RifaGallery() {
 
         return (
           <div key={rifa.id} className="border rounded-lg p-4 shadow hover:shadow-md transition">
-            <Image src={imageUrl} alt={rifa.titulo} className="rounded-md object-cover mb-2 w-full h-auto" />
+            <Image
+              src={imageUrl}
+              alt={rifa.titulo}
+              width={400}
+              height={250}
+              className="rounded-md object-cover mb-2 w-full h-auto"
+            />
             <h3 className="text-lg font-semibold">{rifa.titulo}</h3>
             <p className="text-sm text-gray-600">{rifa.descripcion}</p>
             <Link href={`/dashboard/rifas/${rifa.id}`}>
