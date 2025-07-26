@@ -17,13 +17,13 @@ export function SidebarUserInfo() {
   }
 
   return (
-    <div className={'flex flex-col items-start pb-8 px-2 text-sm font-medium lg:px-4'}>
-      <div className={'flex w-full flex-row mt-6 items-center justify-between'}>
-          <div className={'text-sm leading-5 text-muted-foreground w-full overflow-hidden text-ellipsis'}>
-            {user?.email}
+    <div className="flex flex-col items-start pb-8 px-4 text-sm font-medium lg:px-6">
+      <div className="flex w-full flex-row mt-6 items-center justify-between gap-4">
+        <div className="text-sm leading-5 text-white w-full overflow-hidden text-ellipsis">
+          {user?.email}
         </div>
         <div>
-          <LogOut onClick={handleLogout} className={'h-6 w-6 text-muted-foreground cursor-pointer'} />
+          <LogOut onClick={handleLogout} className="h-6 w-6 text-white cursor-pointer hover:text-[#25D366] transition" />
         </div>
       </div>
     </div>

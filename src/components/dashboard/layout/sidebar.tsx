@@ -4,28 +4,51 @@ import { Album, CreditCard, Home } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import { useUserInfo } from '@/hooks/useUserRole';
+import { createClient } from '@/utils/supabase/client';
 
-const sidebarItems = [
-  {
-    title: 'Mis Boletos',
-    icon: <Home className="h-5 w-5" />,
-    href: '/dashboard',
-  },
-  {
-    title: 'Mis Rifas',
-    icon: <Album className="h-5 w-5" />,
-    href: '/dashboard/subscriptions',
-  },
-  {
-    title: 'Agregar Rifa',
-    icon: <CreditCard className="h-5 w-5" />,
-    href: '/dashboard/payments',
-  },
-];
+const supabase = createClient();
 
 export function Sidebar() {
+  const { user, role, loading } = useUserInfo(supabase);
   const pathname = usePathname();
-  return (
+
+  if (loading) return null;
+
+  // Declarar todos los ítems primero
+  const baseItems = [
+    {
+      title: 'Tablero Informativo',
+      icon: <Home className="h-5 w-5" />,
+      href: '/dashboard',
+    },
+    {
+      title: 'Mis Boletos',
+      icon: <Album className="h-5 w-5" />,
+      href: '/dashboard/boletos',
+    },
+        {
+      title: 'Rifas',
+      icon: <Album className="h-5 w-5" />,
+      href: '/dashboard/rifas',
+    },
+  ];
+
+  const adminItems = [
+    {
+      title: 'Agregar Rifa',
+      icon: <CreditCard className="h-5 w-5" />,
+      href: '/dashboard/agregar_rifa',
+    },
+        {
+      title: 'Pagos',
+      icon: <CreditCard className="h-5 w-5" />,
+      href: '/dashboard/pagos',
+    },
+  ];
+
+const sidebarItems = [...baseItems, ...(role === 'admin' ? adminItems : [])];
+return (
     <nav className="flex gap-6 items-center">
       {sidebarItems.map((item) => (
         <Link

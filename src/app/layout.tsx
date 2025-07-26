@@ -13,8 +13,8 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://paddle-billing.vercel.app'),
-  title: 'Rifas',
+  metadataBase: new URL('https://rifas-nextjs-main.vercel.app/'),
+  title: 'RIFAS.',
   description:
     'Rifas page',
 };
