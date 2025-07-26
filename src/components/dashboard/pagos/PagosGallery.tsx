@@ -18,17 +18,11 @@ export function PagosGallery() {
 
         return (
           <div key={rifa.id} className="border rounded-lg p-4 shadow hover:shadow-md transition">
-            <img
-            src={imageUrl}
-            alt={rifa.titulo}
-            className="rounded-md object-cover mb-2 w-full h-auto"
-            />
+            <Image src={imageUrl} alt={rifa.titulo} className="rounded-md object-cover mb-2 w-full h-auto" />
             <h3 className="text-lg font-semibold">{rifa.titulo}</h3>
             <p className="text-sm text-gray-600">{rifa.descripcion}</p>
             <Link href={`/dashboard/pagos/${rifa.id}`}>
-              <button className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-                Ver detalles
-              </button>
+              <button className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Ver detalles</button>
             </Link>
           </div>
         );

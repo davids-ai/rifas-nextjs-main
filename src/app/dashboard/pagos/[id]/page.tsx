@@ -1,6 +1,5 @@
 import { DashboardPageHeader } from '@/components/dashboard/layout/dashboard-page-header';
 import { PagosList } from '@/components/dashboard/pagos/PagosList';
-import { Footer } from '@/components/home/footer/footer';
 
 export default function PagosPage() {
   return (

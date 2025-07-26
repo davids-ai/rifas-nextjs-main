@@ -18,22 +18,19 @@ export async function createBoletoYPago({
   numero,
   imagen_pago,
   monto,
-  metodo
+  metodo,
 }: CreateBoletoYPagoParams): Promise<{ success: boolean; error?: string }> {
-
   const supabase = createClient();
-    const {
+  const {
     data: { user },
-    } = await supabase.auth.getUser();
+  } = await supabase.auth.getUser();
 
-    const user_id = user?.id;
+  const user_id = user?.id;
 
   try {
     // Subir imagen
     const filename = `${Date.now()}_${imagen_pago.name}`;
-    const { error: uploadError } = await supabase.storage
-      .from('imagenes')
-      .upload(`pagos/${filename}`, imagen_pago);
+    const { error: uploadError } = await supabase.storage.from('imagenes').upload(`pagos/${filename}`, imagen_pago);
 
     if (uploadError) return { success: false, error: uploadError.message };
 
@@ -42,22 +39,24 @@ export async function createBoletoYPago({
     // Insertar boleto
     const { data: boletoData, error: boletoError } = await supabase
       .from('boletos')
-      .insert([{
-        rifa_id,
-        user_id,
-        pagado: false,
-        numeros_boletos,
-        created_at: new Date().toISOString()
-      }])
+      .insert([
+        {
+          rifa_id,
+          user_id,
+          pagado: false,
+          numeros_boletos,
+          created_at: new Date().toISOString(),
+        },
+      ])
       .select('id')
       .single();
 
-    if (boletoError || !boletoData) return { success: false, error: boletoError?.message || 'No se pudo crear el boleto.' };
+    if (boletoError || !boletoData)
+      return { success: false, error: boletoError?.message || 'No se pudo crear el boleto.' };
 
     // Insertar pago
-    const { error: pagoError } = await supabase
-      .from('pagos')
-      .insert([{
+    const { error: pagoError } = await supabase.from('pagos').insert([
+      {
         user_id,
         boleto_id: boletoData.id,
         monto,
@@ -66,13 +65,14 @@ export async function createBoletoYPago({
         created_at: new Date().toISOString(),
         nombres,
         numero,
-        imagen: imagePath
-      }]);
+        imagen: imagePath,
+      },
+    ]);
 
     if (pagoError) return { success: false, error: pagoError.message };
 
     return { success: true };
-  } catch (err) {
+  } catch {
     return { success: false, error: 'Ocurrió un error inesperado.' };
   }
 }

@@ -10,7 +10,7 @@ import { createClient } from '@/utils/supabase/client';
 const supabase = createClient();
 
 export function Sidebar() {
-  const { user, role, loading } = useUserInfo(supabase);
+  const { role, loading } = useUserInfo(supabase);
   const pathname = usePathname();
 
   if (loading) return null;
@@ -27,7 +27,7 @@ export function Sidebar() {
       icon: <Album className="h-5 w-5" />,
       href: '/dashboard/boletos',
     },
-        {
+    {
       title: 'Rifas',
       icon: <Album className="h-5 w-5" />,
       href: '/dashboard/rifas',
@@ -40,28 +40,25 @@ export function Sidebar() {
       icon: <CreditCard className="h-5 w-5" />,
       href: '/dashboard/agregar_rifa',
     },
-        {
+    {
       title: 'Pagos',
       icon: <CreditCard className="h-5 w-5" />,
       href: '/dashboard/pagos',
     },
   ];
 
-const sidebarItems = [...baseItems, ...(role === 'admin' ? adminItems : [])];
-return (
+  const sidebarItems = [...baseItems, ...(role === 'admin' ? adminItems : [])];
+  return (
     <nav className="flex gap-6 items-center">
       {sidebarItems.map((item) => (
         <Link
           key={item.title}
           href={item.href}
-          className={cn(
-            'flex items-center gap-2 px-2 py-1 text-sm font-medium hover:text-blue-300 transition',
-            {
-              'text-blue-300 font-semibold':
-                item.href === '/dashboard' ? pathname === item.href : pathname.includes(item.href),
-              'text-white': pathname !== item.href,
-            }
-          )}
+          className={cn('flex items-center gap-2 px-2 py-1 text-sm font-medium hover:text-blue-300 transition', {
+            'text-blue-300 font-semibold':
+              item.href === '/dashboard' ? pathname === item.href : pathname.includes(item.href),
+            'text-white': pathname !== item.href,
+          })}
         >
           {item.icon}
           {item.title}

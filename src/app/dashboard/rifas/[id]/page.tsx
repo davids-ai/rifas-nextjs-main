@@ -1,5 +1,4 @@
 import { RifaDetail } from '@/components/dashboard/rifas/RifaDetail';
-import { Footer } from '@/components/home/footer/footer';
 
 export default function RifaDetailPage() {
   return (

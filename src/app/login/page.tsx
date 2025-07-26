@@ -1,6 +1,4 @@
-import { LoginGradient } from '@/components/gradients/login-gradient';
 import '../../styles/login.css';
-import { LoginCardGradient } from '@/components/gradients/login-card-gradient';
 import { LoginForm } from '@/components/authentication/login-form';
 
 export default function LoginPage() {

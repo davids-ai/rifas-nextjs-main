@@ -28,7 +28,8 @@ export async function sendEmail({ to, subject, html }: SendEmailOptions) {
   try {
     await transporter.sendMail(mailOptions);
     return { result: true, message: 'E-mail enviado' };
-  } catch (error: any) {
-    return { result: false, message: error.message };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    return { result: false, message };
   }
 }

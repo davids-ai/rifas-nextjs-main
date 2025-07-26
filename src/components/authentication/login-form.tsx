@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { login } from '@/app/login/actions';
 import { useState } from 'react';
+import Image from 'next/image';
 import { useToast } from '@/components/ui/use-toast';
 
 export function LoginForm() {
@@ -25,14 +26,17 @@ export function LoginForm() {
     >
       {/* Logo arriba a la izquierda */}
       <div className="absolute top-8 left-8">
-        <img src="/assets/icons/logo-white.svg" alt="Logo" width={64} height={64} />
+        <Image src="/assets/icons/logo-white.svg" alt="Logo" width={64} height={64} />
       </div>
       {/* Formulario centrado */}
       <form
         action="#"
         className="bg-white rounded-lg px-8 py-10 flex flex-col items-center justify-center w-full max-w-md shadow-lg"
         style={{ boxShadow: '0 4px 24px rgba(0,0,0,0.08)' }}
-        onSubmit={e => { e.preventDefault(); handleLogin(); }}
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleLogin();
+        }}
       >
         <div className="text-[24px] leading-[30px] font-semibold text-center text-gray-800 mb-6">
           Inicia sesión en tu cuenta
@@ -40,14 +44,14 @@ export function LoginForm() {
         <input
           type="email"
           value={email}
-          onChange={e => setEmail(e.target.value)}
+          onChange={(e) => setEmail(e.target.value)}
           placeholder="Correo electrónico"
           className="w-full border border-[#D0D5DD] rounded-lg px-5 py-4 mb-4 text-[16px] text-gray-800 placeholder-[#98A2B3] focus:outline-none"
         />
         <input
           type="password"
           value={password}
-          onChange={e => setPassword(e.target.value)}
+          onChange={(e) => setPassword(e.target.value)}
           placeholder="Contraseña"
           className="w-full border border-[#D0D5DD] rounded-lg px-5 py-4 mb-4 text-[16px] text-gray-800 placeholder-[#98A2B3] focus:outline-none"
         />

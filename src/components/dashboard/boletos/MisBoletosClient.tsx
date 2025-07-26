@@ -14,7 +14,7 @@ export default function MisBoletosClient() {
   useEffect(() => {
     const fetchUser = async () => {
       const supabase = createClient();
-      const { data, error } = await supabase.auth.getUser();
+      const { data } = await supabase.auth.getUser();
       if (data?.user) {
         setUserId(data.user.id);
       }

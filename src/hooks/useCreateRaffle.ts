@@ -5,13 +5,30 @@ import { createClient } from '@/utils/supabase/client';
 import { toast } from '@/components/ui/use-toast';
 import { v4 as uuidv4 } from 'uuid';
 
-export function useCreateRaffle(form: any) {
+type RaffleForm = {
+  title: string;
+  description: string;
+  image: File | undefined;
+  totalTickets: string;
+  precio_boleto: string;
+  forceDraw: boolean;
+  showSold: boolean;
+  streamLink?: string;
+  startDate?: string;
+  endDate?: string;
+  sellAllTickets: boolean;
+  showTickets: boolean;
+  status?: string;
+};
+
+export function useCreateRaffle(form: RaffleForm) {
   const supabase = createClient();
   const [uploading, setUploading] = useState(false);
   const [uploadedImagePath, setUploadedImagePath] = useState<string | null>(null);
 
-  const handleSubmit = async (e: any, onSuccess?: () => void) => {
-    e.preventDefault();
+  // TODO: Reemplaza 'unknown' por el tipo adecuado si es posible
+  const handleSubmit = async (e: unknown, onSuccess?: () => void) => {
+    (e as React.FormEvent).preventDefault();
     setUploading(true);
 
     const {
@@ -27,24 +44,31 @@ export function useCreateRaffle(form: any) {
       endDate,
       sellAllTickets,
       showTickets,
-      status // <- opcionalmente puedes pasar estado ("activa", "cerrada", etc.)
+      status, // <- opcionalmente puedes pasar estado ("activa", "cerrada", etc.)
     } = form;
 
     const {
-    data: { user },
+      data: { user },
     } = await supabase.auth.getUser();
 
     const createdBy = user?.id;
 
     let filePath = uploadedImagePath;
     if (!filePath) {
+      if (!image) {
+        toast({
+          title: 'Error',
+          description: 'Debes seleccionar una imagen para la rifa.',
+          variant: 'destructive',
+        });
+        setUploading(false);
+        return;
+      }
       const fileExt = image.name.split('.').pop();
       const fileName = `${uuidv4()}.${fileExt}`;
       filePath = `imagenes/${fileName}`;
       // Subir imagen al bucket
-      const { error: uploadError } = await supabase.storage
-        .from('imagenes')
-        .upload(filePath, image);
+      const { error: uploadError } = await supabase.storage.from('imagenes').upload(filePath, image);
       if (uploadError) {
         console.error('Error al subir imagen:', uploadError.message);
         setUploading(false);

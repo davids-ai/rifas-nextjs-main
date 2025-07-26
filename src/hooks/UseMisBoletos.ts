@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import { useEffect, useState } from 'react';
 import { createClient } from '@/utils/supabase/client';
@@ -37,7 +37,7 @@ export function useMisBoletos(userId: string | null) {
     };
 
     fetchBoletos();
-  }, [userId]);
+  }, [supabase, userId]);
 
   return { boletos, loading };
 }

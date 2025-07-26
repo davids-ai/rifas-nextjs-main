@@ -1,8 +1,6 @@
-import { DashboardPageHeader } from '@/components/dashboard/layout/dashboard-page-header';
 import { LoadingScreen } from '@/components/dashboard/layout/loading-screen';
 import { Suspense } from 'react';
 import MisBoletosClient from '@/components/dashboard/boletos/MisBoletosClient';
-import { Footer } from '@/components/home/footer/footer';
 
 export default function MisBoletosPage() {
   return (

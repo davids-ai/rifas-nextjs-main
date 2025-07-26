@@ -29,9 +29,7 @@ export function DashboardLayout({ children }: Props) {
       </header>
 
       {/* Contenido principal */}
-      <main className="flex-1 px-6 py-4 bg-[#f8fafc]">
-        {children}
-      </main>
+      <main className="flex-1 px-6 py-4 bg-[#f8fafc]">{children}</main>
 
       {/* Footer estático al final, no se sobrepone al contenido */}
       <footer className="w-full bg-[#f8fafc]">
@@ -61,7 +59,13 @@ export function DashboardLayout({ children }: Props) {
           fontSize: '16px',
         }}
       >
-        <img src="/assets/icons/icono-wp.svg" alt="WhatsApp" width={32} height={32} style={{ display: 'inline-block' }} />
+        <Image
+          src="/assets/icons/icono-wp.svg"
+          alt="WhatsApp"
+          width={32}
+          height={32}
+          style={{ display: 'inline-block' }}
+        />
         ¿Necesitas ayuda?
       </a>
     </div>

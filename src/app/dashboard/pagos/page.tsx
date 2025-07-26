@@ -1,5 +1,4 @@
 import { DashboardPageHeader } from '@/components/dashboard/layout/dashboard-page-header';
-import { Footer } from '@/components/home/footer/footer';
 import { PagosGallery } from '@/components/dashboard/pagos/PagosGallery';
 
 export default function RifasPage() {

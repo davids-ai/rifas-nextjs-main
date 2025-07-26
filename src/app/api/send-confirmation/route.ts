@@ -6,7 +6,8 @@ export async function POST(req: Request) {
     const { to, subject, html } = await req.json();
     const result = await sendEmail({ to, subject, html });
     return NextResponse.json(result);
-  } catch (error: any) {
-    return NextResponse.json({ result: false, message: error.message }, { status: 500 });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    return NextResponse.json({ result: false, message }, { status: 500 });
   }
 }

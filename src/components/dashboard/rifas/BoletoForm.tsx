@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { createBoletoYPago } from '@/hooks/useCreateBoletoYPago';
 import { useBoletosOcupados } from '@/hooks/useBoletosOcupados';
 import { toast } from '@/components/ui/use-toast';
+import Image from 'next/image';
 
 const paymentMethods = [
   {
@@ -28,7 +29,7 @@ interface BoletoFormProps {
 }
 
 export function BoletoForm({ rifaId, cantidadBoletos, valorBoleto, userId }: BoletoFormProps) {
-  const { ocupados, loading: loadingOcupados } = useBoletosOcupados(rifaId);
+  const { ocupados } = useBoletosOcupados(rifaId);
   const [cantidad, setCantidad] = useState(1);
   const [selectedBoletos, setSelectedBoletos] = useState<number[]>([]);
   const [nombre, setNombre] = useState('');
@@ -43,7 +44,7 @@ export function BoletoForm({ rifaId, cantidadBoletos, valorBoleto, userId }: Bol
 
   const handleToggleBoleto = (num: number) => {
     if (selectedBoletos.includes(num)) {
-      setSelectedBoletos(selectedBoletos.filter(n => n !== num));
+      setSelectedBoletos(selectedBoletos.filter((n) => n !== num));
     } else if (selectedBoletos.length < cantidad) {
       setSelectedBoletos([...selectedBoletos, num]);
     }
@@ -57,17 +58,11 @@ export function BoletoForm({ rifaId, cantidadBoletos, valorBoleto, userId }: Bol
     setSelectedBoletos([]);
   };
 
-  const selectedMethod = paymentMethods.find(m => m.name === metodoPago);
+  const selectedMethod = paymentMethods.find((m) => m.name === metodoPago);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     setMensaje('');
-    if (
-      selectedBoletos.length !== cantidad ||
-      !nombre ||
-      !telefono ||
-      !imagenPago
-    ) {
+    if (selectedBoletos.length !== cantidad || !nombre || !telefono || !imagenPago) {
       setMensaje('Por favor completa todos los campos y selecciona los boletos.');
       return;
     }
@@ -94,8 +89,8 @@ export function BoletoForm({ rifaId, cantidadBoletos, valorBoleto, userId }: Bol
           body: JSON.stringify({
             to: telefono.includes('@') ? telefono : 'dsrojaslop@gmail.com', // fallback si no es email
             subject: 'Confirmación de compra de boletos',
-            html: `<p>Hola <b>${nombre}</b>,<br/>Tu compra fue registrada.<br/>Boletos: <b>${selectedBoletos.join(', ')}</b><br/>Método de pago: <b>${metodoPago}</b></p>`
-          })
+            html: `<p>Hola <b>${nombre}</b>,<br/>Tu compra fue registrada.<br/>Boletos: <b>${selectedBoletos.join(', ')}</b><br/>Método de pago: <b>${metodoPago}</b></p>`,
+          }),
         });
       } catch (e) {
         // No interrumpe el flujo si falla el correo
@@ -126,13 +121,17 @@ export function BoletoForm({ rifaId, cantidadBoletos, valorBoleto, userId }: Bol
       <section>
         <h2 className="text-lg font-semibold mb-2">1. Selección de Boletos</h2>
         <div className="flex items-center gap-2 mb-4">
-          <button type="button" onClick={() => handleCantidadChange(-1)} className="px-2 py-1 bg-gray-200 rounded">-</button>
+          <button type="button" onClick={() => handleCantidadChange(-1)} className="px-2 py-1 bg-gray-200 rounded">
+            -
+          </button>
           <span className="font-bold">{cantidad}</span>
-          <button type="button" onClick={() => handleCantidadChange(1)} className="px-2 py-1 bg-gray-200 rounded">+</button>
+          <button type="button" onClick={() => handleCantidadChange(1)} className="px-2 py-1 bg-gray-200 rounded">
+            +
+          </button>
           <span className="ml-2 text-sm text-gray-500">Cantidad de boletos</span>
         </div>
         <div className="grid grid-cols-5 gap-2 mb-2">
-          {boletosDisponibles.map(num => {
+          {boletosDisponibles.map((num) => {
             const ocupado = ocupados.includes(num);
             return (
               <button
@@ -165,7 +164,7 @@ export function BoletoForm({ rifaId, cantidadBoletos, valorBoleto, userId }: Bol
               type="text"
               placeholder="Nombres y Apellidos"
               value={nombre}
-              onChange={e => setNombre(e.target.value)}
+              onChange={(e) => setNombre(e.target.value)}
               className="border border-[#D1E9FF] rounded-lg px-3 py-2 placeholder-[#98A2B3] focus:outline-none focus:ring-2 focus:ring-blue-200"
             />
           </div>
@@ -175,7 +174,7 @@ export function BoletoForm({ rifaId, cantidadBoletos, valorBoleto, userId }: Bol
               type="text"
               placeholder="Teléfono"
               value={telefono}
-              onChange={e => setTelefono(e.target.value)}
+              onChange={(e) => setTelefono(e.target.value)}
               className="border border-[#D1E9FF] rounded-lg px-3 py-2 placeholder-[#98A2B3] focus:outline-none focus:ring-2 focus:ring-blue-200"
             />
           </div>
@@ -186,22 +185,26 @@ export function BoletoForm({ rifaId, cantidadBoletos, valorBoleto, userId }: Bol
       <section>
         <h2 className="text-lg font-semibold mb-2">3. Método de Pago</h2>
         <div className="flex gap-4 mb-2">
-          {paymentMethods.map(method => (
+          {paymentMethods.map((method) => (
             <button
               key={method.name}
               type="button"
               className={`flex items-center gap-2 border border-[#D1E9FF] px-4 py-2 rounded-lg transition-colors duration-150 ${metodoPago === method.name ? 'bg-blue-600 text-white' : 'bg-gray-100'}`}
               onClick={() => setMetodoPago(method.name)}
             >
-              <img src={method.logo} alt={method.name} className="w-7 h-7 object-contain" />
+              <Image src={method.logo} alt={method.name} width={28} height={28} className="w-7 h-7 object-contain" />
               <span>{method.name}</span>
             </button>
           ))}
         </div>
         {selectedMethod && (
           <div className="text-sm bg-gray-50 rounded p-2">
-            <div><strong>Número:</strong> {selectedMethod.accountNumber}</div>
-            <div><strong>Titular:</strong> {selectedMethod.accountHolder}</div>
+            <div>
+              <strong>Número:</strong> {selectedMethod.accountNumber}
+            </div>
+            <div>
+              <strong>Titular:</strong> {selectedMethod.accountHolder}
+            </div>
           </div>
         )}
       </section>
@@ -214,13 +217,24 @@ export function BoletoForm({ rifaId, cantidadBoletos, valorBoleto, userId }: Bol
           <input
             type="file"
             accept="image/*"
-            onChange={e => setImagenPago(e.target.files?.[0] || null)}
+            onChange={(e) => setImagenPago(e.target.files?.[0] || null)}
             className="border border-[#D1E9FF] rounded-lg px-3 py-2 w-full placeholder-[#98A2B3] focus:outline-none focus:ring-2 focus:ring-blue-200 file:hidden"
             style={{ position: 'absolute', opacity: 0, width: '100%', height: '100%', cursor: 'pointer' }}
           />
           <div className="flex items-center justify-center w-full h-12 border border-dashed border-[#D1E9FF] rounded-lg bg-white">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#98A2B3" className="w-6 h-6 mr-2">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 16v-8m0 0l-3 3m3-3l3 3m-9 4v4a2 2 0 002 2h10a2 2 0 002-2v-4M7 16h10" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="#98A2B3"
+              className="w-6 h-6 mr-2"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 16v-8m0 0l-3 3m3-3l3 3m-9 4v4a2 2 0 002 2h10a2 2 0 002-2v-4M7 16h10"
+              />
             </svg>
             <span className="text-[#98A2B3]">{imagenPago ? imagenPago.name : 'Selecciona o arrastra un archivo'}</span>
           </div>

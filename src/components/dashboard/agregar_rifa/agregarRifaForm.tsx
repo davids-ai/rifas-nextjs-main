@@ -3,11 +3,11 @@
 import { useState } from 'react';
 import { useCreateRaffle } from '@/hooks/useCreateRaffle';
 
-    export function RaffleForm() {
-    const [form, setForm] = useState({
+export function RaffleForm() {
+  const [form, setForm] = useState({
     title: '',
     description: '',
-    image: null,
+    image: undefined as File | undefined,
     totalTickets: '',
     precio_boleto: '',
     endDate: '',
@@ -18,7 +18,7 @@ import { useCreateRaffle } from '@/hooks/useCreateRaffle';
     showTickets: false,
     streamLink: '',
     status: 'activa',
-    });
+  });
 
   const { handleSubmit, uploading } = useCreateRaffle(form);
 
@@ -27,7 +27,7 @@ import { useCreateRaffle } from '@/hooks/useCreateRaffle';
     setForm({
       title: '',
       description: '',
-      image: null,
+      image: undefined,
       totalTickets: '',
       precio_boleto: '',
       endDate: '',
@@ -41,11 +41,11 @@ import { useCreateRaffle } from '@/hooks/useCreateRaffle';
     });
   };
 
-  const handleChange = (e: any) => {
-    const { name, value, type, checked, files } = e.target;
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value, type, checked, files } = e.target as HTMLInputElement;
     setForm((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : type === 'file' ? files[0] : value,
+      [name]: type === 'checkbox' ? checked : type === 'file' ? files && files[0] : value,
     }));
   };
 
@@ -105,8 +105,18 @@ import { useCreateRaffle } from '@/hooks/useCreateRaffle';
           <div className="relative">
             <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
               {/* Ícono de carga (SVG) */}
-              <svg className="w-5 h-5 text-[#98A2B3]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5-5m0 0l5 5m-5-5v12" />
+              <svg
+                className="w-5 h-5 text-[#98A2B3]"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5-5m0 0l5 5m-5-5v12"
+                />
               </svg>
             </span>
             <input
@@ -153,21 +163,11 @@ import { useCreateRaffle } from '@/hooks/useCreateRaffle';
         </div>
         <div className="flex flex-col gap-3">
           <label className="flex items-center text-[#000000] font-medium">
-            <input
-              type="checkbox"
-              name="forceDraw"
-              onChange={handleChange}
-              className="mr-2 accent-blue-400"
-            />
+            <input type="checkbox" name="forceDraw" onChange={handleChange} className="mr-2 accent-blue-400" />
             ¿Se realiza el sorteo si no se venden todos los boletos?
           </label>
           <label className="flex items-center text-[#000000] font-medium">
-            <input
-              type="checkbox"
-              name="showSold"
-              onChange={handleChange}
-              className="mr-2 accent-blue-400"
-            />
+            <input type="checkbox" name="showSold" onChange={handleChange} className="mr-2 accent-blue-400" />
             ¿Mostrar cantidad de boletos vendidos al público?
           </label>
         </div>

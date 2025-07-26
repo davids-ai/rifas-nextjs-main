@@ -1,6 +1,5 @@
 import { RifaGallery } from '@/components/dashboard/rifas/RifaGallery';
 import { DashboardPageHeader } from '@/components/dashboard/layout/dashboard-page-header';
-import { Footer } from '@/components/home/footer/footer';
 
 export default function RifasPage() {
   return (

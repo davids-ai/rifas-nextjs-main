@@ -27,18 +27,12 @@ export function usePagos() {
   const updateEstadoPago = async (id: string, nuevoEstado: string): Promise<{ success: boolean; error?: string }> => {
     setLoading(true);
     const supabase = createClient();
-    const { error } = await supabase
-      .from('pagos')
-      .update({ estado: nuevoEstado })
-      .eq('id', id);
+    const { error } = await supabase.from('pagos').update({ estado: nuevoEstado }).eq('id', id);
     let success = false;
     if (!error) {
       success = true;
       // Refresca la lista de pagos
-      const { data } = await supabase
-        .from('pagos')
-        .select('*')
-        .order('created_at', { ascending: false });
+      const { data } = await supabase.from('pagos').select('*').order('created_at', { ascending: false });
       if (data) setPagos(data);
     }
     setLoading(false);
@@ -49,10 +43,7 @@ export function usePagos() {
     const fetchPagos = async () => {
       setLoading(true);
       const supabase = createClient();
-      const { data, error } = await supabase
-        .from('pagos')
-        .select('*')
-        .order('created_at', { ascending: false });
+      const { data } = await supabase.from('pagos').select('*').order('created_at', { ascending: false });
 
       if (data) setPagos(data);
       setLoading(false);
