@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { login } from '@/app/login/actions';
 import { useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useToast } from '@/components/ui/use-toast';
 
 export function LoginForm() {
@@ -26,7 +27,9 @@ export function LoginForm() {
     >
       {/* Logo arriba a la izquierda */}
       <div className="absolute top-8 left-8">
-        <Image src="/assets/icons/logo-white.svg" alt="Logo" width={64} height={64} />
+        <Link href="/">
+          <Image src="/assets/icons/logo-white.svg" alt="AeroEdit" width={80} height={80} className="cursor-pointer" />
+        </Link>
       </div>
       {/* Formulario centrado */}
       <form
