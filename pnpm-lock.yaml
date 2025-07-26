@@ -12,9 +12,6 @@ importers:
 
   .:
     dependencies:
-      '@paddle/paddle-js':
-        specifier: ^1.4.2
-        version: 1.4.2
       '@paddle/paddle-node-sdk':
         specifier: ^3.0.0
         version: 3.0.0
@@ -443,9 +440,6 @@ packages:
   '@nolyfill/is-core-module@1.0.39':
     resolution: {integrity: sha512-nn5ozdjYQpUCZlWGuxcJY/KpxkWQs4DcbMCmKojjyrYDEAGy4Ce19NN4v5MduafTwJlbKc99UA8YhSVqq9yPZA==}
     engines: {node: '>=12.4.0'}
-
-  '@paddle/paddle-js@1.4.2':
-    resolution: {integrity: sha512-pY9jYS+g3vk6ecc7GbCsVSuBEo1Yh+hxYE4i2XoY5/ZBAZLuCkQi/80hOmSBkFoaETohOpDmurILlQdgUHUcvw==}
 
   '@paddle/paddle-node-sdk@3.0.0':
     resolution: {integrity: sha512-7wD4qmZxPSG4YZUXppX+qWJjoes6a6Mk6VbhJ9L1Mm+fik/sUj81YrN49kGzmQ1bG/0Mg3pGC3n07CtB+uDuKA==}
@@ -2916,8 +2910,6 @@ snapshots:
       fastq: 1.19.1
 
   '@nolyfill/is-core-module@1.0.39': {}
-
-  '@paddle/paddle-js@1.4.2': {}
 
   '@paddle/paddle-node-sdk@3.0.0': {}
 

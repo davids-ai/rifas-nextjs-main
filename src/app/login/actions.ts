@@ -20,16 +20,9 @@ export async function login(data: FormData) {
   redirect('/');
 }
 
-export async function loginAnonymously() {
+export async function logout() {
   const supabase = await createClient();
-  const { error: signInError } = await supabase.auth.signInAnonymously();
-  const { error: updateUserError } = await supabase.auth.updateUser({
-    email: `aeroedit+${Date.now().toString(36)}@paddle.com`,
-  });
-
-  if (signInError || updateUserError) {
-    return { error: true };
-  }
+  await supabase.auth.signOut();
 
   revalidatePath('/', 'layout');
   redirect('/');
