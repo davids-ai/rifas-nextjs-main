@@ -1,32 +1,34 @@
-import nodemailer from 'nodemailer';
-
 interface SendEmailOptions {
   to: string;
   subject: string;
   html: string;
 }
 
+// Enviar correo usando la API HTTP de Brevo
 export async function sendEmail({ to, subject, html }: SendEmailOptions) {
-  // Configura tu transporte SMTP (ajusta los datos reales)
-  const transporter = nodemailer.createTransport({
-    host: 'smtp-brevo.com',
-    port: 587,
-    secure: false,
-    auth: {
-      user: '9320ce001@smtp-brevo.com',
-      pass: 'chKt30YyFTQ17vHS',
-    },
-  });
+  const apiKey = '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';
+  const url = 'https://api.brevo.com/v3/smtp/email';
 
-  const mailOptions = {
-    from: 'dsrojaslop@gmail.com',
-    to,
+  const data = {
+    sender: { name: 'Rifas', email: 'dsrojaslop@gmail.com' },
+    to: [{ email: to }],
     subject,
-    html,
+    htmlContent: html,
   };
 
   try {
-    await transporter.sendMail(mailOptions);
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'api-key': apiKey,
+      },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      return { result: false, message: errorData.message || 'Error enviando correo' };
+    }
     return { result: true, message: 'E-mail enviado' };
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error';

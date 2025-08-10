@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { createBoletoYPago } from '@/hooks/useCreateBoletoYPago';
 import { useBoletosOcupados } from '@/hooks/useBoletosOcupados';
 import { toast } from '@/components/ui/use-toast';
+import { compraConfirmacionEmail } from '@/emails/compraConfirmacion';
 
 const paymentMethods = [
   {
@@ -81,15 +82,20 @@ export function BoletoForm({ rifaId, cantidadBoletos, valorBoleto, userId }: Bol
     });
 
     if (result.success) {
-      // Enviar correo de confirmación
+      // Enviar correo de confirmación usando estructura externa
       try {
+        const { subject, html } = compraConfirmacionEmail({
+          nombre,
+          boletos: selectedBoletos,
+          metodoPago,
+        });
         await fetch('/api/send-confirmation', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             to: telefono.includes('@') ? telefono : 'dsrojaslop@gmail.com', // fallback si no es email
-            subject: 'Confirmación de compra de boletos',
-            html: `<p>Hola <b>${nombre}</b>,<br/>Tu compra fue registrada.<br/>Boletos: <b>${selectedBoletos.join(', ')}</b><br/>Método de pago: <b>${metodoPago}</b></p>`,
+            subject,
+            html,
           }),
         });
       } catch (e) {
