@@ -6,11 +6,18 @@ interface SendEmailOptions {
 
 // Enviar correo usando la API HTTP de Brevo
 export async function sendEmail({ to, subject, html }: SendEmailOptions) {
-  const apiKey = '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';
+  const apiKey = process.env.BREVO_API_KEY;
+  const senderName = process.env.BREVO_SENDER_NAME || 'Rifas';
+  const senderEmail = process.env.BREVO_SENDER_EMAIL;
+
+  if (!apiKey || !senderEmail) {
+    return { result: false, message: 'Faltan variables de entorno para enviar el correo' };
+  }
+
   const url = 'https://api.brevo.com/v3/smtp/email';
 
   const data = {
-    sender: { name: 'Rifas', email: 'dsrojaslop@gmail.com' },
+    sender: { name: senderName, email: senderEmail },
     to: [{ email: to }],
     subject,
     htmlContent: html,
@@ -25,10 +32,12 @@ export async function sendEmail({ to, subject, html }: SendEmailOptions) {
       },
       body: JSON.stringify(data),
     });
+
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       return { result: false, message: errorData.message || 'Error enviando correo' };
     }
+
     return { result: true, message: 'E-mail enviado' };
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error';
