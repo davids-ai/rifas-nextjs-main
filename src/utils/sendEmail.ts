@@ -9,12 +9,13 @@ export async function sendEmail({ to, subject, html }: SendEmailOptions) {
   const apiKey = process.env.BREVO_API_KEY;
   const senderName = process.env.BREVO_SENDER_NAME || 'Rifas';
   const senderEmail = process.env.BREVO_SENDER_EMAIL;
+  const brevoUrl = process.env.BREVO_API_URL || 'https://api.brevo.com/v3/smtp/email';
 
   if (!apiKey || !senderEmail) {
     return { result: false, message: 'Faltan variables de entorno para enviar el correo' };
   }
 
-  const url = 'https://api.brevo.com/v3/smtp/email';
+  const url = brevoUrl;
 
   const data = {
     sender: { name: senderName, email: senderEmail },
