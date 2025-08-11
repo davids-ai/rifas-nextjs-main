@@ -26,9 +26,7 @@ export function PoweredByPaddle() {
         </div>
 
         {/* Derechos */}
-        <div className="text-white">
-          © 2025. Todos los derechos reservados.
-        </div>
+        <div className="text-white">© 2025. Todos los derechos reservados.</div>
       </div>
     </footer>
   );

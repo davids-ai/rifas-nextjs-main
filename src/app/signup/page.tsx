@@ -9,14 +9,6 @@ export default function SignupPage() {
       <div className="signup-main-container">
         <SignupForm />
       </div>
-      <div className="signup-login-link-container">
-        <div className="signup-login-link-text">
-          ¿Ya tienes una cuenta?{' '}
-          <a href="/login" className="signup-login-link">
-            Inicia sesión
-          </a>
-        </div>
-      </div>
     </div>
   );
 }

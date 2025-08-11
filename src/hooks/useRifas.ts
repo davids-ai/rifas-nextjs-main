@@ -20,6 +20,7 @@ export interface Rifa {
   enlace_transmision: string;
   sorteo_forzado: boolean;
   venden_todos_boletos: boolean;
+  boleto_ganador: number | null;
 }
 
 export function useRifas() {
@@ -30,10 +31,7 @@ export function useRifas() {
   useEffect(() => {
     const fetchRifas = async () => {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('rifas')
-        .select('*')
-        .order('fecha_fin', { ascending: false });
+      const { data, error } = await supabase.from('rifas').select('*').order('fecha_fin', { ascending: false });
 
       if (error) {
         setError(error.message);

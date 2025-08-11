@@ -3,67 +3,65 @@
 import { useEffect, useState } from 'react';
 import { createClient } from '@/utils/supabase/client';
 
-export interface Pago {
-  id: string;
-  user_id: string;
-  boleto_id: string;
-  monto: number;
-  metodo: string;
-  estado: string;
-  created_at: string;
-  nombres: string;
-  numero: string;
-  imagen: string;
-}
-
 export function usePagos() {
-  const [pagos, setPagos] = useState<Pago[]>([]);
-  const [filteredPagos, setFilteredPagos] = useState<Pago[]>([]);
+  const supabase = createClient();
+  const [pagos, setPagos] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [estado, setEstado] = useState('todos');
 
-  // Actualiza el estado de un pago en Supabase y refresca la lista
-  const updateEstadoPago = async (id: string, nuevoEstado: string): Promise<{ success: boolean; error?: string }> => {
+  useEffect(() => {
+    fetchPagos();
+  }, [search, estado]);
+
+  async function fetchPagos() {
     setLoading(true);
-    const supabase = createClient();
-    const { error } = await supabase.from('pagos').update({ estado: nuevoEstado }).eq('id', id);
-    let success = false;
+    let query = supabase.from('pagos').select('*, boletos:boleto_id(id, pagado)'); // Relación para traer info del boleto
+
+    if (estado !== 'todos') {
+      query = query.eq('estado', estado);
+    }
+    if (search.trim() !== '') {
+      query = query.ilike('nombres', `%${search}%`);
+    }
+
+    const { data, error } = await query;
     if (!error) {
-      success = true;
-      // Refresca la lista de pagos
-      const { data } = await supabase.from('pagos').select('*').order('created_at', { ascending: false });
-      if (data) setPagos(data);
+      setPagos(data);
     }
     setLoading(false);
-    return { success, error: error?.message };
-  };
+  }
 
-  useEffect(() => {
-    const fetchPagos = async () => {
-      setLoading(true);
-      const supabase = createClient();
-      const { data } = await supabase.from('pagos').select('*').order('created_at', { ascending: false });
+  async function updateEstadoPago(id: string, nuevoEstado: string) {
+    try {
+      const { data: pagoData, error: pagoError } = await supabase
+        .from('pagos')
+        .update({ estado: nuevoEstado })
+        .eq('id', id)
+        .select('boleto_id')
+        .single();
 
-      if (data) setPagos(data);
-      setLoading(false);
-    };
+      if (pagoError) throw pagoError;
 
-    fetchPagos();
-  }, []);
+      if (nuevoEstado === 'aprobado' && pagoData?.boleto_id) {
+        const { error: boletoError } = await supabase
+          .from('boletos')
+          .update({ pagado: true })
+          .eq('id', pagoData.boleto_id);
 
-  useEffect(() => {
-    const filtro = pagos.filter((p) => {
-      const coincideNombre = p.nombres.toLowerCase().includes(search.toLowerCase());
-      const coincideEstado = estado === 'todos' || p.estado === estado;
-      return coincideNombre && coincideEstado;
-    });
+        if (boletoError) throw boletoError;
+      }
 
-    setFilteredPagos(filtro);
-  }, [search, estado, pagos]);
+      await fetchPagos();
+
+      return { success: true };
+    } catch (error: any) {
+      return { success: false, error: error.message };
+    }
+  }
 
   return {
-    pagos: filteredPagos,
+    pagos,
     loading,
     search,
     setSearch,

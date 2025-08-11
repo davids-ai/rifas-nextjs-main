@@ -70,48 +70,6 @@
   filter: blur(100px);
 }
 
-/* Sidebar items */
-.dashboard-sidebar-items {
-  color: black; /* texto negro */
-  
-  svg.lucide {
-    color: #4b4f4f;
-  }
-
-  &.dashboard-sidebar-items-active {
-    background: #161d1d;
-
-    svg.lucide {
-      color: hsl(var(--primary));
-    }
-  }
-}
-
-.dashboard-sidebar-items:hover {
-  background: #161d1d;
-
-  svg.lucide {
-    color: hsl(var(--primary));
-  }
-}
-
-/* Highlight líneas */
-.dashboard-sidebar-highlight:after {
-  content: '';
-  width: 248px;
-  height: 1px;
-  position: absolute;
-  left: 50%;
-  margin-left: -124px;
-  top: 0;
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0) 15%,
-    hsl(var(--primary) / 0.6) 50%,
-    rgba(255, 255, 255, 0) 85%
-  );
-}
-
 .dashboard-header-highlight::after {
   content: '';
   width: 248px;

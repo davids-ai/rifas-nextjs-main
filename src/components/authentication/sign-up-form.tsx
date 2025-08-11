@@ -23,7 +23,7 @@ export function SignupForm() {
       });
       return;
     }
-    signup({ email, password }).then((data) => {
+    signup({ email, password }).then((data: { error: boolean }) => {
       if (data?.error) {
         toast({
           description: 'Algo salió mal. Por favor intenta de nuevo.',
@@ -35,7 +35,7 @@ export function SignupForm() {
 
   return (
     <div className="signup-columns-container">
-      {/* Columna izquierda */}
+      {/* Columna izquierda (visible solo en desktop) */}
       <div className="signup-left-column">
         <div className="signup-logo">
           <Link href="/">
@@ -54,6 +54,22 @@ export function SignupForm() {
       </div>
       {/* Columna derecha */}
       <div className="signup-right-column">
+        <div className="signup-header-mobile">
+          <Link href="/">
+            <button className="signup-back-btn" aria-label="Volver a inicio">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                <path
+                  stroke="#222"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M19 12H5m7-7l-7 7 7 7"
+                />
+              </svg>
+            </button>
+          </Link>
+        </div>
+
         <form className="signup-form" onSubmit={handleSignup}>
           <div className="signup-title">Crea una cuenta</div>
           <div className="signup-inputs">

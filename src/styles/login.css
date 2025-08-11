@@ -9,7 +9,6 @@
   flex-direction: column;
 }
 
-
 .signup-main-container {
   flex: 1;
   display: flex;
@@ -17,7 +16,6 @@
   align-items: stretch;
   height: 100%;
 }
-
 
 .signup-columns-container {
   display: flex;
@@ -29,7 +27,6 @@
   overflow: hidden;
   box-shadow: none;
 }
-
 
 .signup-left-column {
   background: linear-gradient(180deg, #007dfa 60%, #007dfa 90%, #4f8edc 100%);
@@ -43,15 +40,11 @@
   height: 100%;
 }
 
-
 .signup-logo {
   position: absolute;
   top: 32px;
   left: 32px;
 }
-
-
-
 
 .signup-info-text {
   position: absolute;
@@ -66,13 +59,12 @@
   line-height: 120%;
   display: flex;
   align-items: center;
-  background: linear-gradient(180deg, #FFFFFF 0%, rgba(255, 255, 255, 0.44) 100%);
+  background: linear-gradient(180deg, #ffffff 0%, rgba(255, 255, 255, 0.44) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   text-fill-color: transparent;
 }
-
 
 .signup-right-column {
   flex: 1;
@@ -82,8 +74,8 @@
   padding: 32px 32px;
   min-width: 0;
   height: 100%;
+  position: relative; /* <-- Se agregó esta propiedad */
 }
-
 
 .signup-form {
   width: 100%;
@@ -102,7 +94,6 @@
   text-align: center;
   margin-bottom: 8px;
 }
-
 
 .signup-inputs {
   display: flex;
@@ -152,7 +143,6 @@
   text-decoration: underline;
 }
 
-
 .signup-submit-btn {
   display: flex;
   flex-direction: row;
@@ -162,7 +152,7 @@
   gap: 5px;
   width: 100%;
   height: 48px;
-  background: #1570EF;
+  background: #1570ef;
   border-radius: 8px;
   color: #fff;
   font-weight: 600;
@@ -174,9 +164,6 @@
   background: #0065cc;
 }
 
-.signup-login-link-container {
-  display: none;
-}
 .signup-login-link-text {
   font-size: 18px;
   color: #222;
@@ -187,11 +174,65 @@
   margin-top: 16px;
 }
 .signup-login-link {
-  color: #d1e9ff;
+  color: #007dfa;
   text-decoration: underline;
   font-weight: 600;
   margin-left: 4px;
 }
+
+/* Nuevas clases y media queries para diseño responsive */
+.signup-header-mobile {
+  display: none;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding-bottom: 24px;
+  position: absolute; /* <-- Se cambió a esta propiedad */
+  top: 24px; /* <-- Nueva propiedad para ajustar posición superior */
+  left: 24px; /* <-- Nueva propiedad para ajustar posición izquierda */
+  z-index: 10; /* <-- Para asegurar que esté por encima de otros elementos */
+}
+
+.signup-back-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.signup-input {
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .signup-columns-container {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .signup-left-column {
+    display: none;
+  }
+
+  .signup-right-column {
+    padding: 24px;
+    position: relative; /* <-- Se agregó aquí para que el posicionamiento absoluto funcione */
+  }
+
+  .signup-header-mobile {
+    display: flex;
+  }
+
+  .signup-form {
+    padding-top: 48px; /* <-- Se agregó un padding para dejar espacio para el botón */
+    max-width: 100%;
+    height: auto;
+  }
+}
+
 .login-background-base {
   width: 100%;
   position: absolute;

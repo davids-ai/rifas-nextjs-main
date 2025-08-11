@@ -15,7 +15,6 @@ export function Sidebar() {
 
   if (loading) return null;
 
-  // Declarar todos los ítems primero
   const baseItems = [
     {
       title: 'Tablero Informativo',
@@ -45,25 +44,37 @@ export function Sidebar() {
       icon: <CreditCard className="h-5 w-5" />,
       href: '/dashboard/pagos',
     },
+    {
+      title: 'Asignar Ganador',
+      icon: <CreditCard className="h-5 w-5" />,
+      href: '/dashboard/asignar_ganador',
+    },
   ];
 
   const sidebarItems = [...baseItems, ...(role === 'admin' ? adminItems : [])];
+
+  // Retornamos un Fragmento para que el padre decida el layout
   return (
-    <nav className="flex gap-6 items-center">
+    <>
       {sidebarItems.map((item) => (
         <Link
           key={item.title}
           href={item.href}
-          className={cn('flex items-center gap-2 px-2 py-1 text-sm font-medium hover:text-blue-300 transition', {
-            'text-blue-300 font-semibold':
-              item.href === '/dashboard' ? pathname === item.href : pathname.includes(item.href),
-            'text-white': pathname !== item.href,
-          })}
+          className={cn(
+            'flex items-center gap-2 px-2 py-1 text-sm font-medium transition',
+            // Estilos del link por defecto
+            'text-white hover:text-blue-300',
+            // Estilos del link activo
+            {
+              'text-blue-300 font-semibold':
+                item.href === '/dashboard' ? pathname === item.href : pathname.includes(item.href),
+            },
+          )}
         >
           {item.icon}
           {item.title}
         </Link>
       ))}
-    </nav>
+    </>
   );
 }
