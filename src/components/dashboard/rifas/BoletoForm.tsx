@@ -31,7 +31,7 @@ interface BoletoFormProps {
 export function BoletoForm({ rifaId, cantidadBoletos, valorBoleto, userId }: BoletoFormProps) {
   const { ocupados, loading: loadingOcupados } = useBoletosOcupados(rifaId);
   const [cantidad, setCantidad] = useState(1);
-  const [selectedBoletos, setSelectedBoletos] = useState<number[]>([]);
+  const [selectedBoletos, setSelectedBoletos] = useState<string[]>([]);
   const [nombre, setNombre] = useState('');
   const [telefono, setTelefono] = useState('');
   const [metodoPago, setMetodoPago] = useState(paymentMethods[0].name);
@@ -39,10 +39,13 @@ export function BoletoForm({ rifaId, cantidadBoletos, valorBoleto, userId }: Bol
   const [mensaje, setMensaje] = useState('');
   const [cargando, setCargando] = useState(false);
 
-  // Simulación de boletos disponibles (puedes reemplazar por datos reales)
-  const boletosDisponibles = Array.from({ length: cantidadBoletos }, (_, i) => i + 1);
+  // Genera los boletos con ceros a la izquierda según la cantidad total
+  const numDigits = cantidadBoletos.toString().length;
+  const boletosDisponibles = Array.from({ length: cantidadBoletos }, (_, i) =>
+    (i + 1).toString().padStart(numDigits, '0'),
+  );
 
-  const handleToggleBoleto = (num: number) => {
+  const handleToggleBoleto = (num: string) => {
     if (selectedBoletos.includes(num)) {
       setSelectedBoletos(selectedBoletos.filter((n) => n !== num));
     } else if (selectedBoletos.length < cantidad) {
@@ -73,7 +76,7 @@ export function BoletoForm({ rifaId, cantidadBoletos, valorBoleto, userId }: Bol
     const result = await createBoletoYPago({
       rifa_id: rifaId,
       user_id: userId,
-      numeros_boletos: selectedBoletos,
+      numeros_boletos: selectedBoletos.map((n) => Number(n)),
       nombres: nombre,
       numero: telefono,
       imagen_pago: imagenPago,
@@ -86,7 +89,7 @@ export function BoletoForm({ rifaId, cantidadBoletos, valorBoleto, userId }: Bol
       try {
         const { subject, html } = compraConfirmacionEmail({
           nombre,
-          boletos: selectedBoletos,
+          boletos: selectedBoletos.map((n) => Number(n)),
           metodoPago,
         });
         await fetch('/api/send-confirmation', {
@@ -138,7 +141,8 @@ export function BoletoForm({ rifaId, cantidadBoletos, valorBoleto, userId }: Bol
         </div>
         <div className="grid grid-cols-5 gap-2 mb-2">
           {boletosDisponibles.map((num) => {
-            const ocupado = ocupados.includes(num);
+            // Convertir ocupados a string con ceros a la izquierda para comparar correctamente
+            const ocupado = ocupados.map((n) => n.toString().padStart(numDigits, '0')).includes(num);
             return (
               <button
                 key={num}
