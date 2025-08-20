@@ -1,4 +1,4 @@
-'use client';
+// ...existing code...
 
 import { useState } from 'react';
 import { createBoletoYPago } from '@/hooks/useCreateBoletoYPago';
@@ -7,7 +7,10 @@ import { toast } from '@/components/ui/use-toast';
 import { compraConfirmacionEmail } from '@/emails/compraConfirmacion';
 import { generateBoletoPdf } from '@/utils/generateBoletoPdf';
 import { sendWhatsappWithPdf } from '@/utils/sendWhatsappWithPdf';
-import { sendEmail } from '@/utils/sendEmail';
+// sendEmail import no es necesario en el cliente, solo se usa la API route
+import { useEffect } from 'react';
+import { createClient } from '@/utils/supabase/client';
+import { useUserInfo } from '@/hooks/useUserInfo';
 
 const paymentMethods = [
   {
@@ -38,6 +41,10 @@ interface BoletoFormProps {
 }
 
 export function BoletoForm({ rifaId, cantidadBoletos, valorBoleto, userId }: BoletoFormProps) {
+  // Obtener email del usuario logueado
+  const supabase = createClient();
+  const { user } = useUserInfo(supabase);
+  const userEmail = user?.email || '';
   // Descargar PDF del boleto
   // Utilidad para cargar imagen como base64
   const fetchImageAsBase64 = async (url: string): Promise<string> => {
@@ -50,40 +57,7 @@ export function BoletoForm({ rifaId, cantidadBoletos, valorBoleto, userId }: Bol
     });
   };
 
-  const handleDownloadPdf = async () => {
-    if (!nombre || selectedBoletos.length === 0) {
-      toast({ title: 'Completa los datos', description: 'Debes llenar nombre y seleccionar boletos.' });
-      return;
-    }
-    // Usar el primer boleto como número principal y generar un número de serie único
-    const numeroBoleto = selectedBoletos[0];
-    const fechaRifa = new Date().toLocaleDateString(); // Puedes ajustar si tienes la fecha real
-    const serie = `${rifaId}-${numeroBoleto}-${Date.now()}`;
-    // Cargar logo como base64
-    const logoImg = await fetchImageAsBase64('/assets/icons/logo/logo-ruiz.png');
-    // Datos de la rifa (puedes ajustar los valores según tu lógica)
-    const nombreRifa = 'Rifa Eventos Ruiz'; // Cambia por el nombre real si lo tienes
-    const fechaSorteo = '2025-09-01'; // Cambia por la fecha real si la tienes
-    const pdfBytes = await generateBoletoPdf({
-      nombre,
-      numeroBoletos: selectedBoletos,
-      fechaRifa,
-      logoImg,
-      telefono,
-      metodoPago,
-      valorBoleto,
-      nombreRifa,
-      fechaSorteo,
-    });
-    const arrayBuffer = pdfBytes instanceof Uint8Array ? pdfBytes.slice().buffer : pdfBytes;
-    const blob = new Blob([arrayBuffer], { type: 'application/pdf' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `boleto-rifa-${nombre}.pdf`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
+  // handleDownloadPdf eliminado, ya no se usa en el flujo actual
   const { ocupados, loading: loadingOcupados } = useBoletosOcupados(rifaId);
   const [cantidad, setCantidad] = useState(1);
   const [selectedBoletos, setSelectedBoletos] = useState<string[]>([]);
@@ -151,8 +125,8 @@ export function BoletoForm({ rifaId, cantidadBoletos, valorBoleto, userId }: Bol
     if (result.success) {
       // Generar PDF del boleto
       const logoImg = await fetchImageAsBase64('/assets/icons/logo/logo-ruiz.png');
-      const nombreRifa = 'Rifa Eventos Ruiz'; // Cambia por el nombre real si lo tienes
-      const fechaSorteo = '2025-09-01'; // Cambia por la fecha real si la tienes
+      const nombreRifa = 'Rifa Eventos Ruiz';
+      const fechaSorteo = '2025-09-01';
       const pdfBytes = await generateBoletoPdf({
         nombre,
         numeroBoletos: selectedBoletos,
@@ -165,18 +139,42 @@ export function BoletoForm({ rifaId, cantidadBoletos, valorBoleto, userId }: Bol
         fechaSorteo,
       });
 
-      // Enviar correo de confirmación
-      if (telefono.includes('@')) {
-        await sendEmail({
-          to: telefono,
-          subject: 'Confirmación de compra de boletos - Ruiz Eventos',
-          html: compraConfirmacionEmail({ nombre, boletos: selectedBoletos.map(Number), metodoPago }),
+      // Enviar correo de confirmación usando la API route
+      let correoEnviado = false;
+      let correoError = '';
+      const destinatario = userEmail || 'dsrojaslop@gmail.com';
+      try {
+        const res = await fetch('/api/send-confirmation-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            to: destinatario,
+            nombre,
+            boletos: selectedBoletos.map(Number),
+            metodoPago,
+          }),
+        });
+        const data = await res.json();
+        correoEnviado = data.result;
+        correoError = data.message;
+        if (!correoEnviado) {
+          toast({
+            title: 'Error enviando correo',
+            description: correoError,
+            variant: 'destructive',
+          });
+        }
+      } catch (err) {
+        correoError = 'Error de red o servidor';
+        toast({
+          title: 'Error enviando correo',
+          description: correoError,
+          variant: 'destructive',
         });
       }
 
-      // Enviar mensaje por WhatsApp con la plantilla
+      // Solo después de intentar enviar el correo, enviar el WhatsApp
       const mensajeWhatsapp = `🎉 ¡Hola ${nombre}!\n\n🙌 Gracias por tu compra en Ruiz Eventos.\n\nAdjuntamos tu(s) 🎟️ boleto(s) en PDF.\n\n⚠️ Recuerda: deberás presentar el boleto (impreso o en tu celular) al ingresar al evento.\n\n✨ ¡Mucha suerte en la rifa y gracias por confiar en nosotros! ✨\n\n📲 Síguenos en Instagram 👉 @rifas_del_ruiz\n🌐 Más información en: ruizeventos.com`;
-      // Convertir PDF a base64 para enviar por WhatsApp
       const pdfBase64 = typeof window !== 'undefined' ? btoa(String.fromCharCode(...new Uint8Array(pdfBytes))) : '';
       await sendWhatsappWithPdf({
         to: telefono,
@@ -184,7 +182,11 @@ export function BoletoForm({ rifaId, cantidadBoletos, valorBoleto, userId }: Bol
         pdfBase64,
         pdfFileName: `boleto-rifa-${nombre}.pdf`,
       });
-      setMensaje('¡Participación registrada con éxito!');
+      setMensaje(
+        correoEnviado
+          ? '¡Participación registrada con éxito!'
+          : '¡Participación registrada, pero hubo un error enviando el correo!',
+      );
       toast({
         title: '¡Compra exitosa!',
         description: `Tus boletos: ${selectedBoletos.join(', ')}`,
@@ -354,7 +356,7 @@ export function BoletoForm({ rifaId, cantidadBoletos, valorBoleto, userId }: Bol
           >
             {cargando ? 'Enviando...' : 'Confirmar participación'}
           </button>
-          {/* Removed PDF download button */}
+          {/* PDF download button eliminado, solo WhatsApp y correo */}
         </div>
         {mensaje && <p className="mt-2 text-center text-green-600">{mensaje}</p>}
       </section>
