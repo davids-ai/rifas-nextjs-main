@@ -5,19 +5,28 @@ import { createBoletoYPago } from '@/hooks/useCreateBoletoYPago';
 import { useBoletosOcupados } from '@/hooks/useBoletosOcupados';
 import { toast } from '@/components/ui/use-toast';
 import { compraConfirmacionEmail } from '@/emails/compraConfirmacion';
+import { generateBoletoPdf } from '@/utils/generateBoletoPdf';
+import { sendWhatsappWithPdf } from '@/utils/sendWhatsappWithPdf';
+import { sendEmail } from '@/utils/sendEmail';
 
 const paymentMethods = [
   {
     name: 'Nequi',
-    accountNumber: '3001234567',
-    accountHolder: 'Juan Pérez',
+    accountNumber: '3123962557',
+    accountHolder: 'Eventos Ruiz',
     logo: '/assets/icons/logo/nequi.png',
   },
   {
     name: 'Daviplata',
-    accountNumber: '3209876543',
-    accountHolder: 'María Gómez',
+    accountNumber: '3123962557',
+    accountHolder: 'Eventos Ruiz',
     logo: '/assets/icons/logo/daviplata.png',
+  },
+  {
+    name: 'Bancolombia - Cuenta de ahorros',
+    accountNumber: '91209869794',
+    accountHolder: 'Eventos Ruiz',
+    logo: '/assets/icons/logo/bancolombia.png',
   },
 ];
 
@@ -29,6 +38,52 @@ interface BoletoFormProps {
 }
 
 export function BoletoForm({ rifaId, cantidadBoletos, valorBoleto, userId }: BoletoFormProps) {
+  // Descargar PDF del boleto
+  // Utilidad para cargar imagen como base64
+  const fetchImageAsBase64 = async (url: string): Promise<string> => {
+    const res = await fetch(url);
+    const blob = await res.blob();
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.readAsDataURL(blob);
+    });
+  };
+
+  const handleDownloadPdf = async () => {
+    if (!nombre || selectedBoletos.length === 0) {
+      toast({ title: 'Completa los datos', description: 'Debes llenar nombre y seleccionar boletos.' });
+      return;
+    }
+    // Usar el primer boleto como número principal y generar un número de serie único
+    const numeroBoleto = selectedBoletos[0];
+    const fechaRifa = new Date().toLocaleDateString(); // Puedes ajustar si tienes la fecha real
+    const serie = `${rifaId}-${numeroBoleto}-${Date.now()}`;
+    // Cargar logo como base64
+    const logoImg = await fetchImageAsBase64('/assets/icons/logo/logo-ruiz.png');
+    // Datos de la rifa (puedes ajustar los valores según tu lógica)
+    const nombreRifa = 'Rifa Eventos Ruiz'; // Cambia por el nombre real si lo tienes
+    const fechaSorteo = '2025-09-01'; // Cambia por la fecha real si la tienes
+    const pdfBytes = await generateBoletoPdf({
+      nombre,
+      numeroBoletos: selectedBoletos,
+      fechaRifa,
+      logoImg,
+      telefono,
+      metodoPago,
+      valorBoleto,
+      nombreRifa,
+      fechaSorteo,
+    });
+    const arrayBuffer = pdfBytes instanceof Uint8Array ? pdfBytes.slice().buffer : pdfBytes;
+    const blob = new Blob([arrayBuffer], { type: 'application/pdf' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `boleto-rifa-${nombre}.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
   const { ocupados, loading: loadingOcupados } = useBoletosOcupados(rifaId);
   const [cantidad, setCantidad] = useState(1);
   const [selectedBoletos, setSelectedBoletos] = useState<string[]>([]);
@@ -51,6 +106,15 @@ export function BoletoForm({ rifaId, cantidadBoletos, valorBoleto, userId }: Bol
     } else if (selectedBoletos.length < cantidad) {
       setSelectedBoletos([...selectedBoletos, num]);
     }
+  };
+
+  // Selección aleatoria de boletos disponibles
+  const handleRandomSelect = () => {
+    const disponibles = boletosDisponibles.filter(
+      (num) => !ocupados.map((n) => n.toString().padStart(numDigits, '0')).includes(num),
+    );
+    const seleccionados = disponibles.sort(() => Math.random() - 0.5).slice(0, cantidad);
+    setSelectedBoletos(seleccionados);
   };
 
   const handleCantidadChange = (delta: number) => {
@@ -85,25 +149,41 @@ export function BoletoForm({ rifaId, cantidadBoletos, valorBoleto, userId }: Bol
     });
 
     if (result.success) {
-      // Enviar correo de confirmación usando estructura externa
-      try {
-        const { subject, html } = compraConfirmacionEmail({
-          nombre,
-          boletos: selectedBoletos.map((n) => Number(n)),
-          metodoPago,
+      // Generar PDF del boleto
+      const logoImg = await fetchImageAsBase64('/assets/icons/logo/logo-ruiz.png');
+      const nombreRifa = 'Rifa Eventos Ruiz'; // Cambia por el nombre real si lo tienes
+      const fechaSorteo = '2025-09-01'; // Cambia por la fecha real si la tienes
+      const pdfBytes = await generateBoletoPdf({
+        nombre,
+        numeroBoletos: selectedBoletos,
+        fechaRifa: new Date().toLocaleDateString(),
+        logoImg,
+        telefono,
+        metodoPago,
+        valorBoleto,
+        nombreRifa,
+        fechaSorteo,
+      });
+
+      // Enviar correo de confirmación
+      if (telefono.includes('@')) {
+        await sendEmail({
+          to: telefono,
+          subject: 'Confirmación de compra de boletos - Ruiz Eventos',
+          html: compraConfirmacionEmail({ nombre, boletos: selectedBoletos.map(Number), metodoPago }),
         });
-        await fetch('/api/send-confirmation', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            to: telefono.includes('@') ? telefono : 'dsrojaslop@gmail.com', // fallback si no es email
-            subject,
-            html,
-          }),
-        });
-      } catch (e) {
-        // No interrumpe el flujo si falla el correo
       }
+
+      // Enviar mensaje por WhatsApp con la plantilla
+      const mensajeWhatsapp = `🎉 ¡Hola ${nombre}!\n\n🙌 Gracias por tu compra en Ruiz Eventos.\n\nAdjuntamos tu(s) 🎟️ boleto(s) en PDF.\n\n⚠️ Recuerda: deberás presentar el boleto (impreso o en tu celular) al ingresar al evento.\n\n✨ ¡Mucha suerte en la rifa y gracias por confiar en nosotros! ✨\n\n📲 Síguenos en Instagram 👉 @rifas_del_ruiz\n🌐 Más información en: ruizeventos.com`;
+      // Convertir PDF a base64 para enviar por WhatsApp
+      const pdfBase64 = typeof window !== 'undefined' ? btoa(String.fromCharCode(...new Uint8Array(pdfBytes))) : '';
+      await sendWhatsappWithPdf({
+        to: telefono,
+        body: mensajeWhatsapp,
+        pdfBase64,
+        pdfFileName: `boleto-rifa-${nombre}.pdf`,
+      });
       setMensaje('¡Participación registrada con éxito!');
       toast({
         title: '¡Compra exitosa!',
@@ -138,8 +218,18 @@ export function BoletoForm({ rifaId, cantidadBoletos, valorBoleto, userId }: Bol
             +
           </button>
           <span className="ml-2 text-sm text-gray-500">Cantidad de boletos</span>
+          <button
+            type="button"
+            onClick={handleRandomSelect}
+            className="ml-4 px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600"
+          >
+            Elegir aleatoriamente
+          </button>
         </div>
-        <div className="grid grid-cols-5 gap-2 mb-2">
+        <div
+          className={`grid grid-cols-5 gap-2 mb-2 ${cantidadBoletos > 100 ? 'max-h-64 overflow-y-auto border border-blue-200 rounded-lg p-2 bg-gray-50' : ''}`}
+          style={cantidadBoletos > 100 ? { maxHeight: '16rem', overflowY: 'auto' } : {}}
+        >
           {boletosDisponibles.map((num) => {
             // Convertir ocupados a string con ceros a la izquierda para comparar correctamente
             const ocupado = ocupados.map((n) => n.toString().padStart(numDigits, '0')).includes(num);
@@ -256,13 +346,16 @@ export function BoletoForm({ rifaId, cantidadBoletos, valorBoleto, userId }: Bol
         <p className="text-xs text-gray-600 mb-4">
           Al confirmar, autorizo el uso de mis datos personales conforme a la Ley de Protección de Datos.
         </p>
-        <button
-          type="submit"
-          disabled={cargando}
-          className="w-full bg-blue-600 text-white py-3 rounded-lg font-bold text-lg hover:bg-blue-700 transition"
-        >
-          {cargando ? 'Enviando...' : 'Confirmar participación'}
-        </button>
+        <div className="flex flex-col gap-2">
+          <button
+            type="submit"
+            disabled={cargando}
+            className="w-full bg-blue-600 text-white py-3 rounded-lg font-bold text-lg hover:bg-blue-700 transition"
+          >
+            {cargando ? 'Enviando...' : 'Confirmar participación'}
+          </button>
+          {/* Removed PDF download button */}
+        </div>
         {mensaje && <p className="mt-2 text-center text-green-600">{mensaje}</p>}
       </section>
     </form>

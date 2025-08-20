@@ -7,13 +7,14 @@ interface CountdownTimerProps {
 }
 
 export function CountdownTimer({ targetDate }: CountdownTimerProps) {
-  const [timeLeft, setTimeLeft] = useState(targetDate.getTime() - Date.now());
+  const [timeLeft, setTimeLeft] = useState(0);
 
   useEffect(() => {
+    // Calcular el tiempo restante al montar el componente
+    setTimeLeft(targetDate.getTime() - Date.now());
     const timer = setInterval(() => {
       setTimeLeft(targetDate.getTime() - Date.now());
     }, 1000);
-
     return () => clearInterval(timer);
   }, [targetDate]);
 
