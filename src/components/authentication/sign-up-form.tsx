@@ -5,10 +5,12 @@ import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { signup } from '@/app/signup/actions';
 import { useToast } from '@/components/ui/use-toast';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 export function SignupForm() {
   const { toast } = useToast();
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [accepted, setAccepted] = useState(false);
@@ -29,6 +31,8 @@ export function SignupForm() {
           description: 'Algo salió mal. Por favor intenta de nuevo.',
           variant: 'destructive',
         });
+      } else {
+        router.push('/dashboard');
       }
     });
   }

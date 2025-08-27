@@ -6,27 +6,24 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useToast } from '@/components/ui/use-toast';
+import { useRouter } from 'next/navigation';
 
 export function LoginForm() {
   const { toast } = useToast();
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   async function handleLogin() {
     const data = await login({ email, password });
 
-    if (data?.error) {
-      if (data.error === 'no_verified') {
-        toast({
-          description: 'Debes verificar tu cuenta. Revisa tu bandeja de entrada para confirmar tu correo.',
-          variant: 'destructive',
-        });
-      } else if (data.error === 'invalid_credentials') {
-        toast({
-          description: 'Correo o contraseña inválidos',
-          variant: 'destructive',
-        });
-      }
+    if (data?.error && data.error === 'invalid_credentials') {
+      toast({
+        description: 'Correo o contraseña inválidos',
+        variant: 'destructive',
+      });
+    } else if (data && !data.error) {
+      router.push('/dashboard');
     }
   }
 
@@ -62,6 +59,11 @@ export function LoginForm() {
           placeholder="Contraseña"
           className="w-full border border-[#D0D5DD] rounded-lg px-5 py-4 mb-4 text-[16px]"
         />
+        <div className="w-full text-right mb-4">
+          <Link href="/recuperar-contrasena" className="text-sm text-[#1570EF] underline hover:text-blue-700">
+            ¿Olvidaste tu contraseña?
+          </Link>
+        </div>
         <Button type="submit" className="w-full mt-2 bg-[#1570EF] text-white font-semibold rounded-lg py-3">
           Iniciar sesión
         </Button>

@@ -11,18 +11,27 @@ interface FormData {
 
 export async function signup(data: FormData) {
   const supabase = await createClient();
-  const { error } = await supabase.auth.signUp({
+  const { error: signUpError } = await supabase.auth.signUp({
     email: data.email,
     password: data.password,
   });
 
-  if (error) {
-    return { error: true, message: error.message };
+  if (signUpError) {
+    return { error: true, message: signUpError.message };
   }
 
-  // Si quieres redirigir después de registrarse
-  revalidatePath('/', 'layout');
-  redirect('/');
+  // Iniciar sesión automáticamente después de registrarse
+  const { error: signInError } = await supabase.auth.signInWithPassword({
+    email: data.email,
+    password: data.password,
+  });
+
+  if (signInError) {
+    return { error: true, message: signInError.message };
+  }
+
+  // El frontend se encarga de redirigir al dashboard
+  return { error: false };
 }
 
 export async function login(data: FormData) {
