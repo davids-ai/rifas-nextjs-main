@@ -12,20 +12,20 @@ type Boleto = {
   numeros_boletos: string[]; // asumiendo que es un array de strings
 };
 
-export function useMisBoletos(userId: string | null) {
+export function useMisBoletos(cedula: string | null) {
   const supabase = createClient();
   const [boletos, setBoletos] = useState<Boleto[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!userId) return;
+    if (!cedula) return;
 
     const fetchBoletos = async () => {
       setLoading(true);
       const { data, error } = await supabase
         .from('boletos')
         .select('*')
-        .eq('user_id', userId)
+        .eq('cedula', cedula)
         .order('created_at', { ascending: false });
 
       if (error) {
@@ -37,7 +37,7 @@ export function useMisBoletos(userId: string | null) {
     };
 
     fetchBoletos();
-  }, [supabase, userId]);
+  }, [supabase, cedula]);
 
   return { boletos, loading };
 }

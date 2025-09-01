@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 interface Props {
   user: User | null;
 }
- 
+
 export default function Header({ user }: Props) {
   return (
     <nav>
@@ -18,13 +18,22 @@ export default function Header({ user }: Props) {
         </div>
         <div className="flex flex-1 items-center justify-end">
           <div className="flex space-x-4">
+            <Button asChild={true} variant={'ghost'}>
+              <Link href={'/'}>Inicio</Link>
+            </Button>
+            <Button asChild={true} variant={'ghost'}>
+              <Link href={'/rifas'}>Rifas</Link>
+            </Button>
+            <Button asChild={true} variant={'ghost'}>
+              <Link href={'/boletos'}>Boletos</Link>
+            </Button>
             {user?.id ? (
               <Button variant={'secondary'} asChild={true}>
                 <Link href={'/dashboard'}>Panel de Rifas</Link>
               </Button>
             ) : (
               <Button asChild={true} variant={'secondary'}>
-                <Link href={'/login'}>Ingresar</Link>
+                <Link href={'/login'}>Ingresar / Admin</Link>
               </Button>
             )}
           </div>

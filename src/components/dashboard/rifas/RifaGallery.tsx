@@ -74,7 +74,7 @@ export function RifaGallery() {
               {/* Botón */}
               <div className="mt-4">
                 {esActiva ? (
-                  <Link href={`/dashboard/rifas/${rifa.id}`}>
+                  <Link href={`/rifas/${rifa.id}`}>
                     <button className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition">
                       Ver detalles
                     </button>

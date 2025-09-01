@@ -1,7 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ['cdn.simpleicons.org', 'localhost', 'paddle-billing.vercel.app','ykadqjrmfioixplxvyfa.supabase.co'],
+    remotePatterns: [
+      { protocol: 'https', hostname: 'cdn.simpleicons.org' },
+      { protocol: 'http', hostname: 'localhost' },
+      { protocol: 'https', hostname: 'paddle-billing.vercel.app' },
+      { protocol: 'https', hostname: 'ykadqjrmfioixplxvyfa.supabase.co' },
+    ],
   },
 };
 

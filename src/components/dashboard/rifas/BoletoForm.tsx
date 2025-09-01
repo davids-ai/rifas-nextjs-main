@@ -62,6 +62,7 @@ export function BoletoForm({ rifaId, cantidadBoletos, valorBoleto, userId }: Bol
   const [cantidad, setCantidad] = useState(1);
   const [selectedBoletos, setSelectedBoletos] = useState<string[]>([]);
   const [nombre, setNombre] = useState('');
+  const [cedula, setCedula] = useState('');
   const [telefono, setTelefono] = useState('');
   const [metodoPago, setMetodoPago] = useState(paymentMethods[0].name);
   const [imagenPago, setImagenPago] = useState<File | null>(null);
@@ -104,7 +105,7 @@ export function BoletoForm({ rifaId, cantidadBoletos, valorBoleto, userId }: Bol
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setMensaje('');
-    if (selectedBoletos.length !== cantidad || !nombre || !telefono || !imagenPago) {
+    if (selectedBoletos.length !== cantidad || !nombre || !cedula || !telefono || !imagenPago) {
       setMensaje('Por favor completa todos los campos y selecciona los boletos.');
       return;
     }
@@ -116,6 +117,7 @@ export function BoletoForm({ rifaId, cantidadBoletos, valorBoleto, userId }: Bol
       user_id: userId,
       numeros_boletos: selectedBoletos.map((n) => Number(n)),
       nombres: nombre,
+      cedula: cedula,
       numero: telefono,
       imagen_pago: imagenPago,
       monto: cantidad * 1, // Ajusta el precio si tienes el valor por boleto
@@ -193,6 +195,7 @@ export function BoletoForm({ rifaId, cantidadBoletos, valorBoleto, userId }: Bol
       });
       setSelectedBoletos([]);
       setNombre('');
+      setCedula('');
       setTelefono('');
       setImagenPago(null);
       setCantidad(1);
@@ -259,7 +262,7 @@ export function BoletoForm({ rifaId, cantidadBoletos, valorBoleto, userId }: Bol
       {/* 2. Datos Personales */}
       <section>
         <h2 className="text-lg font-semibold mb-2">2. Datos Personales</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="flex flex-col gap-1">
             <label className="text-black text-sm font-medium">Nombres y Apellidos</label>
             <input
@@ -267,6 +270,16 @@ export function BoletoForm({ rifaId, cantidadBoletos, valorBoleto, userId }: Bol
               placeholder="Nombres y Apellidos"
               value={nombre}
               onChange={(e) => setNombre(e.target.value)}
+              className="border border-[#D1E9FF] rounded-lg px-3 py-2 placeholder-[#98A2B3] focus:outline-none focus:ring-2 focus:ring-blue-200"
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <label className="text-black text-sm font-medium">Cédula</label>
+            <input
+              type="text"
+              placeholder="Cédula"
+              value={cedula}
+              onChange={(e) => setCedula(e.target.value)}
               className="border border-[#D1E9FF] rounded-lg px-3 py-2 placeholder-[#98A2B3] focus:outline-none focus:ring-2 focus:ring-blue-200"
             />
           </div>

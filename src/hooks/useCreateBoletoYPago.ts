@@ -5,6 +5,7 @@ interface CreateBoletoYPagoParams {
   user_id?: string; // Opcional si tienes autenticación
   numeros_boletos: number[];
   nombres: string;
+  cedula: string;
   numero: string;
   imagen_pago: File;
   monto: number;
@@ -15,6 +16,7 @@ export async function createBoletoYPago({
   rifa_id,
   numeros_boletos,
   nombres,
+  cedula,
   numero,
   imagen_pago,
   monto,
@@ -45,6 +47,7 @@ export async function createBoletoYPago({
           user_id,
           pagado: false,
           numeros_boletos,
+          cedula,
           created_at: new Date().toISOString(),
         },
       ])

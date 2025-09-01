@@ -21,16 +21,6 @@ export function Sidebar() {
       icon: <Home className="h-5 w-5" />,
       href: '/dashboard',
     },
-    {
-      title: 'Mis Boletos',
-      icon: <Album className="h-5 w-5" />,
-      href: '/dashboard/boletos',
-    },
-    {
-      title: 'Rifas',
-      icon: <Album className="h-5 w-5" />,
-      href: '/dashboard/rifas',
-    },
   ];
 
   const adminItems = [
