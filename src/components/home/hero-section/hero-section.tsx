@@ -18,7 +18,7 @@ export function HeroSection() {
         {/* Botón */}
         <div className="mt-8">
           <button
-            onClick={() => router.push('/signup')}
+            onClick={() => router.push('/rifas')}
             className="bg-blue-600 hover:bg-blue-700 text-white text-lg font-medium py-3 px-6 rounded-full shadow-md transition duration-300 cursor-pointer"
           >
             Comprar boletos ahora
