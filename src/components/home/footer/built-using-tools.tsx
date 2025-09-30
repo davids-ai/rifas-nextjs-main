@@ -27,9 +27,9 @@ export function BuiltUsingTools() {
         <div className="mb-8 md:mb-0">
           <h4 className="font-semibold text-lg mb-4">CONTACTO</h4>
           <ul className="text-sm space-y-2">
-            <li>misitioweb.com</li>
+            <li>ruizeventos.com</li>
             <li>Colombia</li>
-            <li>+57 3103103101</li>
+            <li>+57 3052070067</li>
           </ul>
         </div>
 
@@ -37,8 +37,16 @@ export function BuiltUsingTools() {
         <div className="mb-8 md:mb-0">
           <h4 className="font-semibold text-lg mb-4">SÍGUENOS</h4>
           <div className="flex space-x-4 items-center">
-            <Image src="/assets/icons/logo/instagram.svg" alt="Instagram" width={24} height={24} />
-            <Image src="/assets/icons/logo/facebook.svg" alt="Facebook" width={24} height={24} />
+            <a
+              href="https://www.instagram.com/eventosdelruiz?igsh=MTRxbWhibHljeTFwbg=="
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Image src="/assets/icons/logo/instagram.svg" alt="Instagram" width={24} height={24} />
+            </a>
+            <a href="https://www.facebook.com/share/19h3pkgZf8/" target="_blank" rel="noopener noreferrer">
+              <Image src="/assets/icons/logo/facebook.svg" alt="Facebook" width={24} height={24} />
+            </a>
           </div>
         </div>
       </div>
